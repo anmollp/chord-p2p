@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "7MGdqikUjoe4dy5mGqvzMQ0tPTS0D+3/hzWrZfUBjnWzthKuFgUw5tyN7Dh+AQpNasjv6Uw2ReRxn9CN9VAxOw==",
+  "success": true,
+  "projectFilePath": "/Users/anmol/Projects/DOSP-Project3-19673150/DOSP-Project3-19673150.fsproj",
+  "expectedPackageFiles": [
+    "/Users/anmol/.nuget/packages/fsharp.core/5.0.0/fsharp.core.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

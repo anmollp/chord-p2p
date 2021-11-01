@@ -1,0 +1,63 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/anmol/Projects/DOSP-Project3-19673150/DOSP-Project3-19673150.fsproj": {}
+  },
+  "projects": {
+    "/Users/anmol/Projects/DOSP-Project3-19673150/DOSP-Project3-19673150.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/anmol/Projects/DOSP-Project3-19673150/DOSP-Project3-19673150.fsproj",
+        "projectName": "DOSP-Project3-19673150",
+        "projectPath": "/Users/anmol/Projects/DOSP-Project3-19673150/DOSP-Project3-19673150.fsproj",
+        "packagesPath": "/Users/anmol/.nuget/packages/",
+        "outputPath": "/Users/anmol/Projects/DOSP-Project3-19673150/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/anmol/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[5.0.0, )",
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.400/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
