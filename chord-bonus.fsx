@@ -116,7 +116,7 @@ let findSuccessor (key: int, id: int, successor: int, hop: int, mailbox: IActorR
     printf "Chord # "
     nodes |> Seq.iter (printf "%d->")
     printfn ""    
-    printfn "%d, %d, %A" key id finger
+    
     if key > successor then
         if (key < id && id <= getNearestPowerOfTwo(nodes.Count)-1) then
             let n = getNearestPowerOfTwo(nodes.Count)-1
@@ -196,7 +196,6 @@ let Node(key: int)(mailbox: Actor<_>) =
             | LeaveChord(nodeId) -> 
                 mailbox.Self.Tell(PoisonPill.Instance, mailbox.Self)
                 nodes <- nodes.Remove(nodeId)
-                // currentNumNodes <- currentNumNodes - 1
             | _ -> printfn "Invalid response(Node)"
 
             return! loop()
@@ -211,8 +210,6 @@ let Supervisor(mailbox: Actor<_>) =
             match msg with 
             | FindOperation(fileId) ->
                 let randomNodeFromChord = chordNodes.[randomNum(chordNodes.Count)]
-                // let a () = (ranStr(10).GetHashCode() |> Math.Abs) % getNearestPowerOfTwo(getNearestPowerOfTwo(currentNumNodes))
-                // let dataToFind =  a ()
                 randomNodeFromChord.Tell(FindKey(fileId, 0), mailbox.Self)
             | Supervise ->
                 timer.AutoReset <- true

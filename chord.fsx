@@ -75,14 +75,14 @@ let sendFoundMessage(n, id, hop, mailbox) =
     else
         system.ActorSelection("akka://Chord-System/user/node-" + getHashForNode n).Tell(Found(id, n, hop), mailbox)
 
-let closestPrecedingNode(key: int, id: int, finger: Dictionary<int, int>, mailbox: IActorRef, hop: int, maxBits: int) = 
+let closestPrecedingNode(key: int, id: int, finger: Dictionary<int, int>, maxBits: int) = 
     let mutable iter = maxBits
     let mutable isFound = false
     let mutable node = key
     while iter > 0 && not isFound do
         if key > id then
-            if (key < finger.Item(iter) && finger.Item(iter) <= getNearestPowerOfTwo(currentNumNodes)-1) then
-                node <- getNearestPowerOfTwo(currentNumNodes)-1
+            if (key < finger.Item(iter) && finger.Item(iter) <= getNearestPowerOfTwo(nodes.Count)-1) then
+                node <- getNearestPowerOfTwo(nodes.Count)-1
                 isFound <- true
             else
                 if finger.Item(iter) < id then
@@ -102,25 +102,31 @@ let closestPrecedingNode(key: int, id: int, finger: Dictionary<int, int>, mailbo
     node
 
 let findSuccessor (key: int, id: int, successor: int, hop: int, mailbox: IActorRef, finger: Dictionary<int, int>, bits: int) =
+    printf "Chord # "
     nodes |> Seq.iter (printf "%d->")
-    printfn ""
-    // printfn "%d, %d, %A" key id finger
+    printfn ""    
+
     if key > successor then
-        if (key < id && id <= getNearestPowerOfTwo(currentNumNodes)-1) then
-            let n = getNearestPowerOfTwo(currentNumNodes)-1
+        if (key < id && id <= getNearestPowerOfTwo(nodes.Count)-1) then
+            let n = getNearestPowerOfTwo(nodes.Count)-1
             sendFoundMessage(n, id, hop, mailbox)
         else if 0 <= id  && id <= successor then
-            sendFoundMessage(id, successor, hop+1, mailbox)
+            if id = 0 then
+                sendFoundMessage(0, id, hop+1, mailbox)
+            else if id = successor then
+                sendFoundMessage(0, id, hop+1, mailbox)
+            else
+                sendMessage(successor, id, hop+1, mailbox)
         else
-            let nDash = closestPrecedingNode(key, id, finger, mailbox, hop, bits)
+            let nDash = closestPrecedingNode(key, id, finger, bits)
             sendMessage(nDash, id, hop+1, mailbox)
     else
         if key < id && id <= successor then
-            sendFoundMessage(id, successor, hop+1, mailbox)
+            sendFoundMessage(successor, id, hop+1, mailbox)
         else if key = id then
-            sendFoundMessage(id, successor, hop+1, mailbox)
+            sendFoundMessage(key, id, hop+1, mailbox)
         else
-            let nDash = closestPrecedingNode(key, id, finger, mailbox, hop, bits)
+            let nDash = closestPrecedingNode(key, id, finger, bits)
             sendMessage(nDash, id, hop+1, mailbox)
        
 let Node(key: int)(mailbox: Actor<_>) =
@@ -174,8 +180,6 @@ let Node(key: int)(mailbox: Actor<_>) =
                 findSuccessor(key, id, successor, hop+1, mailbox.Self, finger, maxBits(currentNumNodes))
             | Found(id, s, hop) -> 
                 printfn "I have song %d, and my name is Server %d" id s
-                // system.ActorSelection("akka://Chord-System/user/node-" + getHashForNode s).Tell(PoisonPill.Instance, mailbox.Self)
-                // nodes <- nodes.Remove(s)
                 totalHops <- totalHops + hop
                 printfn "***************************Found*********************************"
             | Kill -> mailbox.Self.Tell(PoisonPill.Instance, mailbox.Self)
@@ -227,7 +231,6 @@ let buildChord numNodes =
     chordNodes.Add(node)
     nodes <- nodes.Add(0)
     set <- set.Add(0)
-    // let a () = (ranStr(10).GetHashCode() |> Math.Abs) % getNearestPowerOfTwo(numNodes)
     while set.Count <> numNodes do
         set <- set.Add(randomNum(getNearestPowerOfTwo(numNodes)))
     for key in set do
@@ -241,7 +244,6 @@ let main(numNodes: int, numRequests: int) =
     let x = buildChord(numNodes)
     printfn "Finished Building"
     Threading.Thread.Sleep(5000)
-    // if x.Count = numNodes then
     supervisor <! Supervise
     for i in 0 .. numNodes-1 do
         for _ in 1 .. numRequests do
@@ -249,7 +251,6 @@ let main(numNodes: int, numRequests: int) =
             let a () = (ranStr(100).GetHashCode() |> Math.Abs) % getNearestPowerOfTwo(getNearestPowerOfTwo(currentNumNodes))
             let dataToFind =  a ()
             chordNodes.[i] <! FindKey(dataToFind, 0)
-            // supervisor <! FindOperation
 
     let averageHops = float(totalHops/(numRequests * numNodes))
     printfn "Average hops for %d requests is %.2f" (numRequests*numNodes) averageHops
